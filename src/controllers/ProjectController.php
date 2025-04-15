@@ -8,28 +8,38 @@ use App\models\Project;
 class ProjectController
 {
     private $projectModel;
-    private $authMiddleware;
+    private $user;
 
     public function __construct()
     {
         $this->projectModel = new Project();
-        $this->authMiddleware = new AuthMiddleware();
+        $this->user = (new AuthMiddleware())->handle();
     }
 
-    public function createProject(){
-        $userData = $this->authMiddleware->handle();
-        $data = json_decode(file_get_contents("php://input"), true);
+    public function createProject(array $data){
 
-        if (empty($data['title']) || empty($data['description']) || empty($data['start_date']) || empty($data['delivery_date']) || empty($data['state'])) {
+        if (
+            empty($data['title']) ||
+            empty($data['description']) ||
+            empty($data['start_date']) ||
+            empty($data['delivery_date']) ||
+            empty($data['state'])) {
             http_response_code(400);
-            echo json_encode(["error" => "Todos los campos son obligatorios"]);
+            echo json_encode(["error" => "All fields are required"]);
             return;
         }
 
-        $data['user_id'] = $userData->userId;
-        $data['created_at'] = date("Y-m-d H:i:s");
+        $project = [
+            "title" => $data["title"],
+            "description" => $data["description"],
+            "start_date" => $data["start_date"],
+            "delivery_date" => $data["delivery_date"],
+            "state" => $data["state"],
+            "user_id" => $this->user->id,
+            "created_at" => date('Y-m-d H:i:s')
+        ];
 
-        if($this->projectModel->createProject($data)){
+        if($this->projectModel->createProject($project)) {
             http_response_code(201);
             echo json_encode(["message" => "Project created successfully"]);
         } else {
@@ -39,16 +49,19 @@ class ProjectController
     }
 
     public function listProjects(){
-        $userData = $this->authMiddleware->handle();
-        $projects = $this->projectModel->getProjectsByUser($userData->userId);
+        $projects = $this->projectModel->getProjectsByUser($this->user->id);
 
+        if($projects === false){
+            http_response_code(500);
+            echo json_encode(["error" => "Error fetching projects"]);
+            return;
+        }
         http_response_code(200);
         echo json_encode($projects);
     }
 
     public function getProject($id){
-        $userData = $this->authMiddleware->handle();
-        $project = $this->projectModel->getProjectById($id, $userData->userId);
+        $project = $this->projectModel->getProjectById($id, $this->user->id);
 
         if ($project) {
             http_response_code(200);
@@ -60,14 +73,20 @@ class ProjectController
     }
 
     public function updateProject($id){
-        $userData = $this->authMiddleware->handle();
-        $data = json_decode(file_get_contents("php://input"), true);
+        $data = json_decode(file_get_contents("php://input",true), true);
 
-        if (empty($data['title']) || empty($data['description']) || empty($data['start_date']) || empty($data['delivery_date']) || empty($data['state'])) {
+        if (
+            empty($data['title']) ||
+            empty($data['description']) ||
+            empty($data['start_date']) ||
+            empty($data['delivery_date']) ||
+            empty($data['state'])) {
             http_response_code(400);
             echo json_encode(["error" => "All fields are required"]);
             return;
         }
+
+        $data['user_id'] = $this->user->id;
 
         if($this->projectModel->updateProject($id, $data)){
             http_response_code(200);
@@ -80,9 +99,7 @@ class ProjectController
 
     public function deleteProject($id)
     {
-        $userData = $this->authMiddleware->handle();
-
-        if ($this->projectModel->deleteProject($id, $userData->userId)) {
+        if ($this->projectModel->deleteProject($id, $this->user->id)) {
             http_response_code(200);
             echo json_encode(["message" => "Project deleted successfully"]);
         } else {

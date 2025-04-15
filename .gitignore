@@ -1,0 +1,18 @@
+# Ignorar el archivo .env
+.env
+
+# Ignorar dependencias instaladas por Composer
+/vendor/
+
+# Ignorar cachés y archivos temporales
+*.log
+*.cache
+*.tmp
+
+# Ignorar configuraciones específicas del IDE
+.idea/
+*.iml
+
+# Ignorar otros archivos del sistema operativo
+.DS_Store
+Thumbs.db

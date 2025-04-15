@@ -60,16 +60,11 @@ class UserController
         }
 
         try {
-            $token = $this->AuthService->generateToken($user["id"]);
+            $token = $this->AuthService->generateToken($user);
             http_response_code(200);
             echo json_encode([
                 "message" => "Login successful",
-                "token" => $token,
-                "user" => [
-                    "id" => $user["id"],
-                    "name" => $user["name"],
-                    "email" => $user["email"]
-                ]
+                "token" => $token
             ]);
         } catch (\Exception $e) {
             http_response_code(500);

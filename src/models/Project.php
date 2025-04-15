@@ -52,7 +52,8 @@ class Project extends BaseModel
             ':description' => $data['description'],
             ':start_date' => $data['start_date'],
             ':delivery_date' => $data['delivery_date'],
-            ':state' => $data['state']
+            ':state' => $data['state'],
+            ':user_id' => $data['user_id']
         ]);
     }
 

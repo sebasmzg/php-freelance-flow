@@ -14,13 +14,20 @@ class AuthService
             die(json_encode(["error" => "SECRET_KEY no definida o vacía"]));
         }
     }
-    public function generateToken($userId){
+    public function generateToken($user){
+        if (!isset($user["id"], $user["name"], $user["email"])) {
+            throw new \Exception("Datos de usuario incompletos para generar el token.");
+        }
         $payload = [
             "iss" => "http://localhost", // Emisor
             "aud" => "http://localhost", // Audiencia
             "iat" => time(), // Emitido en
             "exp" => time() + 3600, // Expira en 1 hora
-            "userId" => $userId
+            "user" => [
+                "id" => $user["id"],
+                "name" => $user["name"],
+                "email" => $user["email"],
+            ]
         ];
         return JWT::encode($payload, $this->secretKey, 'HS256');
     }
