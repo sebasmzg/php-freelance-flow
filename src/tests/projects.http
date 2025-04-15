@@ -1,0 +1,56 @@
+### Registro de usuario
+POST http://localhost:8000/index.php?url=register
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "johndoe@example.com",
+  "password": "password123"
+}
+
+### Inicio de sesión
+POST http://localhost:8000/index.php?url=login
+Content-Type: application/json
+
+{
+  "email": "johndoe@example.com",
+  "password": "password123"
+}
+
+### Crear proyecto
+POST http://localhost:8000/index.php?url=projects/create
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Nuevo Proyecto",
+  "description": "Descripción del proyecto",
+  "start_date": "2023-10-01",
+  "delivery_date": "2023-12-01",
+  "state": "PENDING"
+}
+
+### Listar proyectos
+GET http://localhost:8000/index.php?url=projects/list
+Authorization: Bearer {{token}}
+
+### Obtener proyecto por ID
+GET http://localhost:8000/index.php?url=projects/get/1
+Authorization: Bearer {{token}}
+
+### Actualizar proyecto
+PUT http://localhost:8000/index.php?url=projects/update/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Proyecto Actualizado",
+  "description": "Descripción actualizada",
+  "start_date": "2023-10-01",
+  "delivery_date": "2023-12-15",
+  "state": "IN PROGRESS"
+}
+
+### Eliminar proyecto
+DELETE http://localhost:8000/index.php?url=projects/delete/1
+Authorization: Bearer {{token}}
