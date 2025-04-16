@@ -210,6 +210,7 @@ This API allows managing projects and associated files, and users with registrat
 ```
 .
 ├── public
+│   └── index.php
 ├── src
 │   ├── controllers
 │   ├── middleware
@@ -218,9 +219,14 @@ This API allows managing projects and associated files, and users with registrat
 │   └── routes.php
 ├── uploads
 ├── vendor
+├── docs
 └──composer.json
 
 ```
+## Postman Collection
+
+You can import this collection into Postman to test the API:
+[freelance-flow-api.postman_collection.json](./docs/freelance-flow.postman_collection.json)
 
 ---
 
