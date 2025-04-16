@@ -129,4 +129,31 @@ class FileController
             echo json_encode(["error" => "Error deleting file"]);
         }
     }
+
+    public function downloadFile($projectId, $fileId) {
+        if (!$this->projectModel->getProjectById($projectId, $this->user->id)) {
+            http_response_code(404);
+            echo json_encode(["error" => "Project not found"]);
+            return;
+        }
+
+        $filePath = $this->fileModel->getFilePathById($fileId);
+
+        if (!$filePath || !file_exists($filePath)) {
+            http_response_code(404);
+            echo json_encode(["error" => "File not found"]);
+            return;
+        }
+
+        // Configuración de encabezados para la descarga
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename="' . basename($filePath) . '"');
+        header('Content-Length: ' . filesize($filePath));
+        header('Pragma: public');
+
+        // Enviar el archivo al cliente
+        readfile($filePath);
+        exit;
+    }
 }

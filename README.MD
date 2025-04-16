@@ -231,5 +231,4 @@ You can import this collection into Postman to test the API:
 ---
 
 ## License
-This project is licensed under the [MIT](LICENSE) license.
-```
+This project is licensed under the [MIT](LICENSE) license.32

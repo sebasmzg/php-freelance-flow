@@ -40,4 +40,17 @@ class File extends BaseModel
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([':id' => $id]);
     }
+
+    public function getFilePathById($id){
+        $sql = "SELECT filename FROM {$this->table} WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        $file = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($file) {
+            return __DIR__ . '/../uploads/' . $file['filename'];
+        }
+
+        return false;
+    }
 }

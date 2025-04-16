@@ -69,6 +69,14 @@ function handleRoutesRequest(){
         exit;
     }
 
+    if (preg_match('#^/projects/(\d+)/files/(\d+)/download$#', $requestUri, $matches) && $requestMethod === 'GET') {
+        $authMiddleware->handle();
+        $projectId = $matches[1];
+        $fileId = $matches[2];
+        $fileController->downloadFile($projectId, $fileId);
+        exit;
+    }
+
     switch ($requestUri) {
         case '/register':
             if ($requestMethod === 'POST') {
