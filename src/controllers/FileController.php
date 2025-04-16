@@ -31,25 +31,25 @@ class FileController
             return;
         }
 
-        $filename = pathinfo($_FILES["file"]["name"], PATHINFO_FILENAME);
-        $extension = pathinfo($_FILES["file"]["name"], PATHINFO_EXTENSION);
-        $uploadDir = __DIR__ . '/../../uploads/';
-        $uploadFilePath = $uploadDir . $filename . '.' . $extension;
+        $target_dir = __DIR__ . '/../uploads/';
+        $target_file = $target_dir . basename($_FILES["file"]["name"]);
+        $file_extension = pathinfo($target_file, PATHINFO_EXTENSION);
+        $base_name = pathinfo($target_file, PATHINFO_FILENAME);
         $counter = 1;
 
-        while (file_exists($uploadFilePath)) {
-            $uploadFilePath = $uploadDir . $filename . "($counter)." . $extension;
+        while (file_exists($target_file)) {
+            $target_file = $target_dir . $base_name . '(' . $counter . ')' . '.' . $file_extension;
             $counter++;
         }
 
-        if (!move_uploaded_file($_FILES["file"]["tmp_name"], $uploadFilePath)) {
+        if (!move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
             http_response_code(500);
             echo json_encode(["error" => "Error saving file"]);
             return;
         }
 
         $fileData = [
-            "filename" => basename($uploadFilePath),
+            "filename" => basename($target_file),
             "project_id" => $projectId,
             "uploaded_at" => date('Y-m-d H:i:s')
         ];
