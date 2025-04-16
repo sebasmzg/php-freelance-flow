@@ -2,15 +2,14 @@
 
 use App\controllers\UserController;
 use App\controllers\ProjectController;
-use App\controllers\PrivateController;
 use App\middleware\AuthMiddleware;
 use App\controllers\FileController;
 
 function handleRoutesRequest(){
-    $privateController = new PrivateController();
     $userController = new UserController();
     $projectsController = new ProjectController();
     $fileController = new FileController();
+    $authMiddleware = new AuthMiddleware();
 
     $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     $requestMethod = $_SERVER['REQUEST_METHOD'];
@@ -18,21 +17,21 @@ function handleRoutesRequest(){
 //projects routes
 
     if (preg_match('#^/projects/get/(\d+)$#', $requestUri, $matches) && $requestMethod === 'GET') {
-        (new AuthMiddleware())->handle();
+        $authMiddleware->handle();
         $id = $matches[1];
         $projectsController->getProject($id);
         exit;
     }
 
     if (preg_match('#^/projects/update/(\d+)$#', $requestUri, $matches) && $requestMethod === 'PUT') {
-        (new AuthMiddleware())->handle();
+        $authMiddleware->handle();
         $id = $matches[1];
         $projectsController->updateProject($id);
         exit;
     }
 
     if (preg_match('#^/projects/delete/(\d+)$#', $requestUri, $matches) && $requestMethod === 'DELETE') {
-        (new AuthMiddleware())->handle();
+        $authMiddleware->handle();
         $id = $matches[1];
         $projectsController->deleteProject($id);
         exit;
@@ -41,21 +40,21 @@ function handleRoutesRequest(){
 //files routes
 
     if (preg_match('#^/projects/(\d+)/files/upload$#', $requestUri, $matches) && $requestMethod === 'POST') {
-        (new AuthMiddleware())->handle();
+        $authMiddleware->handle();
         $projectId = $matches[1];
         $fileController->uploadFile($projectId);
         exit;
     }
 
     if (preg_match('#^/projects/(\d+)/files$#', $requestUri, $matches) && $requestMethod === 'GET') {
-        (new AuthMiddleware())->handle();
+        $authMiddleware->handle();
         $projectId = $matches[1];
         $fileController->listFiles($projectId);
         exit;
     }
 
     if (preg_match('#^/projects/(\d+)/files/(\d+)$#', $requestUri, $matches) && $requestMethod === 'GET') {
-        (new AuthMiddleware())->handle();
+        $authMiddleware->handle();
         $projectId = $matches[1];
         $fileId = $matches[2];
         $fileController->getFile($projectId, $fileId);
@@ -63,7 +62,7 @@ function handleRoutesRequest(){
     }
 
     if (preg_match('#^/projects/(\d+)/files/(\d+)$#', $requestUri, $matches) && $requestMethod === 'DELETE') {
-        (new AuthMiddleware())->handle();
+        $authMiddleware->handle();
         $projectId = $matches[1];
         $fileId = $matches[2];
         $fileController->deleteFile($projectId, $fileId);
@@ -86,15 +85,23 @@ function handleRoutesRequest(){
 
         case '/projects/create':
             if ($requestMethod === 'POST') {
-                (new AuthMiddleware())->handle();
+                $authMiddleware->handle(); // Protege la ruta
                 $data = json_decode(file_get_contents("php://input"), true);
-                $projectsController->createProject($data);
+                // Verifica que los datos sean válidos
+                if ($data) {
+                    $projectsController->createProject($data);
+                } else {
+                    http_response_code(400);
+                    echo json_encode([
+                        "error" => "Datos no válidos"
+                    ]);
+                }
             }
             break;
 
         case '/projects':
             if ($requestMethod === 'GET') {
-                (new AuthMiddleware())->handle();
+                $authMiddleware->handle(); // Protege la ruta
                 $projectsController->listProjects();
             }
             break;
