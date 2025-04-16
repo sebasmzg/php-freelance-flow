@@ -190,6 +190,15 @@ This API allows managing projects and associated files, and users with registrat
   - `200 OK`: Returns the file.
   - `404 Not Found`: File not found.
 
+#### `GET /projects/{projectId}/files/{fileId}/download`
+- **Description**: Downloads a file by its ID.
+- **Headers**:
+  - `Authorization: Bearer <token>`
+- **Response**:
+  - `200 OK`: Initiates the file download.
+  - `404 Not Found`: File not found.
+  - `500 Internal Server Error`: Error retrieving the file.
+
 #### `DELETE /projects/{projectId}/files/{fileId}`
 - **Description**: Deletes a file by its ID.
 - **Headers**:
