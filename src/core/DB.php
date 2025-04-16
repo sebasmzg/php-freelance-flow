@@ -6,18 +6,27 @@ use PDOException;
 
 class DB
 {
-        private $host = "127.0.0.1";
-        private $db_name = "freelance_flow";
-        private $username = "root";
-        private $password = "password";
+        private $host;
+        private $db_name;
+        private $username;
+        private $password;
 
-        public function connect(){
+        public function __construct()
+        {
+            $this->host = $_ENV['DB_HOST'] ?? 'localhost';
+            $this->db_name = $_ENV['DB_NAME'] ?? 'your_database_name';
+            $this->username = $_ENV['DB_USERNAME'] ?? 'your_username';
+            $this->password = $_ENV['DB_PASSWORD'] ?? 'your_password';
+        }
+
+    public function connect(){
             try {
                 $pdo = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 return $pdo;
             } catch(PDOException $e) {
-                echo "Connection error: " . $e->getMessage();
+                echo "Error in connection to DB: " . $e->getMessage();
+                throw new PDOException("Connection error: " . $e->getMessage());
             }
         }
 }
