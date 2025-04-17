@@ -25,9 +25,16 @@ class FileController
             return;
         }
 
-        if (!isset($_FILES["file"]) || $_FILES["file"]["error"] !== UPLOAD_ERR_OK) {
+        if (!isset($_FILES["file"])) {
             http_response_code(400);
-            echo json_encode(["error" => "File upload error"]);
+            echo json_encode(["error" => "No file submitted"]);
+            return;
+        }
+
+        if ($_FILES["file"]["error"] !== UPLOAD_ERR_OK) {
+            $error_message = $this->getFileErrorMessage($_FILES["file"]["error"]);
+            http_response_code(400);
+            echo json_encode(["error" => "File upload error: " . $error_message]);
             return;
         }
 

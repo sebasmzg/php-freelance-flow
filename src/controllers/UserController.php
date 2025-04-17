@@ -29,7 +29,7 @@ class UserController
             http_response_code(400);
             echo json_encode(["error" => "Invalid email format"]);
             return;
-        }
+        } 
 
         if($this->UserModel->getUserByEmail($data['email'])){
             http_response_code(409);
@@ -38,7 +38,7 @@ class UserController
         }
 
         if($this->UserModel->createUser($data)){
-            http_response_code(200);
+            http_response_code(201);
             echo json_encode(["message" => "User created"]);
         }
     }
