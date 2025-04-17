@@ -25,6 +25,12 @@ class UserController
             return;
         }
 
+        if(!filter_var($data['email'], FILTER_VALIDATE_EMAIL)){
+            http_response_code(400);
+            echo json_encode(["error" => "Invalid email format"]);
+            return;
+        }
+
         if($this->UserModel->getUserByEmail($data['email'])){
             http_response_code(409);
             echo json_encode(["error" => "User already exists"]);
